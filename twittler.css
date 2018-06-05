@@ -1,0 +1,21 @@
+div {
+  background-color: #08a0e9;
+  color: white;
+  margin: 0;
+  padding: 0;
+  border: solid;
+  border-radius: 10px;
+  display: block;
+}
+
+button {
+    background-color: #0084b4;
+    border: none;
+    color: white;
+    padding: 5px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+    font-size: 16px;
+}

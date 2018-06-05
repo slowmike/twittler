@@ -1,25 +1,92 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="jquery.js"></script>
-    <script src="data_generator.js"></script>
+    <link href="twittler.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <script>
+    <section class="alerts">
+      <button id="update">View New Tweets</button>
+      <button id="view-all">View All Tweets</button>
+    </section>
+    <section id="tweet-container"></section>
+    <script src="jquery.js"></script>
+    <script src="data_generator.js"></script>
+    <script type ="text/javascript">
 
-      $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+      $(document).ready(function() {
+        var twittler = (function() {
+          function displayTweet(index) {
+            var tweet = streams.home[index];
+            var $tweet = $('<div class="tweet"><p class="message">' + tweet.message +
+            '</p><p class="posted-by">~ <a class="user">@' +
+            tweet.user + '</a> [' + Date(Date.now()).toString() +']</div>');
+            $tweet.prependTo($tweetContainer);
+          }
+          function showNewTweets() {
+            var newTweetCount = streams.home.length;
+            for (var i = oldTweetCount; i < newTweetCount; i++) {
+              displayTweet(i);
+            }
+            oldTweetcount = newTweetCount;
+            this.updateUserList($('.user'));
+          }
 
+          function filterUser(user) {
+            var tweets = $('.tweet');
+            for (var i = 0; i < tweets.length; i++) {
+              var filteredUser = tweets.eq(i).find('.user').text().trim();
+              if (filteredUser === user) {
+                tweets.eq(i).addClass('filtered');
+              } else {
+                tweets.eq(i).removeClass('filtered').slideUp();
+              }
+            }
+            $viewall.show();
+          }
+
+
+          function updateUserList(users) {
+            users.click(function() {
+              var user = $(this).text().trim();
+              twittler.filterUser(user);
+            });
+          };
+
+
+          function viewAll() {
+            $('.tweet').css('display', 'block');
+            $viewAll.css('display', 'none');
+          }
+
+          return {
+            displayTweet: displayTweet,
+            showNewTweets: showNewTweets,
+            filterUser: filterUser,
+            updateUserList: updateUserList,
+            viewAll: viewAll
+          };
+        })();
+
+        $('#view-all').hide();
+        var $tweetContainer = $('#tweet-container');
+        var $update = $('#update');
+        var $viewall = $('#view-all');
+        var oldTweetCount = streams.home.length;
         var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
+        while (index >= 0) {
+          twittler.displayTweet(index);
           index -= 1;
         }
 
+        twittler.updateUserList($('.user'));
+
+        $update.click(function() {
+          twittler.showNewTweets();
+        });
+
+        $viewall.click(function() {
+          twittler.viewAll();
+        })
       });
 
     </script>
